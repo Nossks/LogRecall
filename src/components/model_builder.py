@@ -5,7 +5,7 @@ import torch
 class Model(nn.Module):
     def __init__(self):
         super().__init__()
-        self.model = AutoModel.from_pretrained("microsoft/deberta-v3-small")
+        self.model = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L12-v2")
     
     def forward(self,io):
         outputs = self.model(**io)
