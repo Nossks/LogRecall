@@ -20,18 +20,18 @@ LogRecall is a log template retrieval and evidence recall system for HDFS-style 
 
 ```mermaid
 flowchart TD
-    A[Input Logs (data/HDFS.log)] --> B[Stage 1: Preprocessing]
-    B --> C[Masked Triplet Data (artifacts/stage1_triplet_data.parquet)]
-    C --> D[Stage 2: Model Fine-tuning]
-    D --> E[Encoder Weights (artifacts/stage1_encoder.pth)]
-    A --> F[Stage 3: Parsed Logs CSV (artifacts/HDFS_parsed.csv)]
-    E --> G[Stage 4: FAISS Index Build]
-    G --> H[FAISS Index (artifacts/logrecall_core.index)]
-    F --> I[Stage 5: SQLite Metadata Build]
-    I --> J[SQLite DB (artifacts/logrecall_metadata.db)]
-    H --> K[Search API (app.py)]
+    A["Input Logs (data/HDFS.log)"] --> B["Stage 1: Preprocessing"]
+    B --> C["Masked Triplet Data (artifacts/stage1_triplet_data.parquet)"]
+    C --> D["Stage 2: Model Fine-tuning"]
+    D --> E["Encoder Weights (artifacts/stage1_encoder.pth)"]
+    A --> F["Stage 3: Parsed Logs CSV (artifacts/HDFS_parsed.csv)"]
+    E --> G["Stage 4: FAISS Index Build"]
+    G --> H["FAISS Index (artifacts/logrecall_core.index)"]
+    F --> I["Stage 5: SQLite Metadata Build"]
+    I --> J["SQLite DB (artifacts/logrecall_metadata.db)"]
+    H --> K["Search API (app.py)"]
     J --> K
-    K --> L[Search Results]
+    K --> L["Search Results"]
 ```
 
 ---
