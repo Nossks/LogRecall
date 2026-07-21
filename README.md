@@ -181,6 +181,24 @@ This project writes artifacts into `artifacts/`:
 
 ---
 
+## Training Results
+
+The model was fine-tuned using triplet loss.
+
+```text
+Train Loss: 0.003393430442570947
+Validation Loss: 0.00005727660690629205
+```
+
+The trained encoder weights were saved to:
+
+```text
+artifacts/stage1_encoder.pth
+```
+
+The low training and validation loss indicates that the encoder successfully learned the triplet-based embedding objective during the initial training run. Further experiments with additional epochs and retrieval evaluation metrics can be used to assess generalization and improve template retrieval performance.
+
+
 ## Troubleshooting
 
 * `ModuleNotFoundError` — run `pip install -e .` after activating the virtual environment.

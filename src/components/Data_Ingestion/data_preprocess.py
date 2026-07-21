@@ -3,6 +3,7 @@ import os
 import re
 import hashlib
 from dataclasses import dataclass
+from src.utils import mask_log
 
 @dataclass
 class DataPreprocessConfig:
@@ -13,13 +14,6 @@ class DataPreprocessConfig:
 class DataPreprocess:
     def __init__(self):
         self.config = DataPreprocessConfig()
-        
-    def mask_log(self, raw_log: str) -> str:
-        cleaned = re.sub(r'^\s*\d+\s+\d+\s+\d+\s+[A-Z]+\s+[^:]+:\s*', '', raw_log)
-        cleaned = re.sub(r'blk_-?\d+', '<BLOCK_ID>', cleaned)
-        cleaned = re.sub(r'\b\d{1,3}(?:\.\d{1,3}){3}\b', '<IP>', cleaned)
-        cleaned = re.sub(r'\b\d+\b', '<NUM>', cleaned)
-        return cleaned.strip()
 
     def generate_hash(self, text: str) -> str:
         return hashlib.md5(text.encode('utf-8')).hexdigest()[:8]
@@ -31,7 +25,7 @@ class DataPreprocess:
             for line in f:
                 if not line.strip():
                     continue
-                masked_text = self.mask_log(line)
+                masked_text = mask_log(line)
                 hash_id = self.generate_hash(masked_text)
                 
                 processed_records.append({

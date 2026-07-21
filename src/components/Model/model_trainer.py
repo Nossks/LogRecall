@@ -1,6 +1,6 @@
 from src.utils import create_collate_fn
-from src.components.triplet_dataset import TripletDataset
-from src.components.model_builder import Model
+from src.components.Model.triplet_dataset import TripletDataset
+from src.components.Model.model_builder import Model
 from dataclasses import dataclass
 import pandas as pd
 import torch.nn as nn
@@ -18,7 +18,7 @@ class TrainerConfig:
     max_len=128
 
 class Trainer:
-    def __init__(self,epochs=10,lr=2e-5):
+    def __init__(self,epochs=5,lr=2e-5):
         self.config = TrainerConfig()
         self.device = torch.device('cuda' if torch.cuda.is_available() else "cpu")
         self.model = Model().to(self.device)
@@ -40,9 +40,10 @@ class Trainer:
                 vec_pos = self.model(pos_inputs)
                 vec_neg = self.model(neg_inputs)
 
-                dist_pos = 1.0 - (vec_anchor * vec_pos).sum(dim=1)
-                dist_neg = 1.0 - (vec_anchor * vec_neg).sum(dim=1)                
-                loss = torch.nn.functional.relu(dist_pos - dist_neg + 0.3).mean()
+                # dist_pos = 1.0 - (vec_anchor * vec_pos).sum(dim=1)
+                # dist_neg = 1.0 - (vec_anchor * vec_neg).sum(dim=1)                
+                # loss = torch.nn.functional.relu(dist_pos - dist_neg + 0.3).mean()
+                loss = self.loss_function(vec_anchor,vec_pos,vec_neg)
 
                 total_loss += loss.item()
 
@@ -71,6 +72,10 @@ class Trainer:
         )
 
         self.optimizer = torch.optim.AdamW(self.model.parameters(),lr=self.lr)
+        self.loss_function = nn.TripletMarginWithDistanceLoss(
+            distance_function=lambda x, y: 1.0 - (x * y).sum(dim=1),
+            margin=0.3
+        )
 
         for epoch in range(self.epochs):
             self.model.train()
@@ -84,10 +89,11 @@ class Trainer:
                 vec_pos = self.model(pos_inputs)
                 vec_neg = self.model(neg_inputs)
 
-                dist_pos = 1.0 - (vec_anchor * vec_pos).sum(dim=1)
-                dist_neg = 1.0 - (vec_anchor * vec_neg).sum(dim=1)                
-                loss = torch.nn.functional.relu(dist_pos - dist_neg + 0.3).mean()
+                # dist_pos = 1.0 - (vec_anchor * vec_pos).sum(dim=1)
+                # dist_neg = 1.0 - (vec_anchor * vec_neg).sum(dim=1)                
+                # loss = torch.nn.functional.relu(dist_pos - dist_neg + 0.3).mean()
 
+                loss = self.loss_function(vec_anchor,vec_pos,vec_neg)
                 self.optimizer.zero_grad()
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)
@@ -105,6 +111,6 @@ class Trainer:
         torch.save(self.model.state_dict(), self.config.model_path + "stage1_encoder.pth")
 
 
-if __name__ == "__main__":
-    obj = Trainer(3)
-    obj.InitiateTraining()
+# if __name__ == "__main__":
+#     obj = Trainer(3)
+#     obj.InitiateTraining()
